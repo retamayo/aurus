@@ -19,7 +19,9 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Stephenjude\FilamentBlog\BlogPlugin;
 use Joaopaulolndev\FilamentGeneralSettings\FilamentGeneralSettingsPlugin;
+use TomatoPHP\FilamentBrowser\FilamentBrowserPlugin;
 use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
+use TomatoPHP\FilamentDeveloperGate\FilamentDeveloperGatePlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -67,6 +69,27 @@ class AdminPanelProvider extends PanelProvider
                 ->setTitle('General Settings')
                 ->setNavigationLabel('General Settings'),
                 FilamentMediaManagerPlugin::make(),
+                // FilamentBrowserPlugin::make()
+                // ->hiddenFolders([
+                //     base_path('app')
+                // ])
+                // ->hiddenFiles([
+                //     base_path('.env')
+                // ])
+                // ->hiddenExtensions([
+                //     "php"
+                // ])
+                // ->allowCreateFolder()
+                // ->allowEditFile()
+                // ->allowCreateNewFile()
+                // ->allowCreateFolder()
+                // ->allowRenameFile()
+                // ->allowDeleteFile()
+                // ->allowMarkdown()
+                // ->allowCode()
+                // ->allowPreview()
+                // ->basePath(base_path()),
+                FilamentDeveloperGatePlugin::make(),
             ]);
     }
 }
