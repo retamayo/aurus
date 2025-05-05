@@ -23,6 +23,9 @@ use TomatoPHP\FilamentBrowser\FilamentBrowserPlugin;
 use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
 use TomatoPHP\FilamentDeveloperGate\FilamentDeveloperGatePlugin;
 use TomatoPHP\FilamentNotes\FilamentNotesPlugin;
+use TomatoPHP\FilamentApi\FilamentAPIPlugin;
+use TomatoPHP\FilamentAlerts\FilamentAlertsPlugin;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -71,6 +74,8 @@ class AdminPanelProvider extends PanelProvider
                 FilamentMediaManagerPlugin::make(),
                 FilamentDeveloperGatePlugin::make(),
                 FilamentNotesPlugin::make(),
+                FilamentAPIPlugin::make(),
+                FilamentAlertsPlugin::make(),
             ]);
     }
 }
