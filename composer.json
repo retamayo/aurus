@@ -15,7 +15,8 @@
         "stephenjude/filament-blog": "^4.0",
         "tomatophp/filament-browser": "^2.0",
         "tomatophp/filament-developer-gate": "^1.0",
-        "tomatophp/filament-media-manager": "^1.1"
+        "tomatophp/filament-media-manager": "^1.1",
+        "tomatophp/filament-notes": "^1.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
