@@ -25,6 +25,15 @@ use TomatoPHP\FilamentDeveloperGate\FilamentDeveloperGatePlugin;
 use TomatoPHP\FilamentNotes\FilamentNotesPlugin;
 use TomatoPHP\FilamentApi\FilamentAPIPlugin;
 use TomatoPHP\FilamentAlerts\FilamentAlertsPlugin;
+use TomatoPHP\FilamentUsers\FilamentUsersPlugin;
+use TomatoPHP\FilamentLogger\FilamentLoggerPlugin;
+use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
+use TomatoPHP\FilamentDocs\FilamentDocsPlugin;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
+use Devonab\FilamentEasyFooter\EasyFooterPlugin;
+use TimWassenburg\FilamentTimesheets\FilamentTimesheetsPlugin;
+use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
+use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -76,6 +85,15 @@ class AdminPanelProvider extends PanelProvider
                 FilamentNotesPlugin::make(),
                 FilamentAPIPlugin::make(),
                 FilamentAlertsPlugin::make(),
+                FilamentUsersPlugin::make(),
+                FilamentLoggerPlugin::make(),
+                FilamentExceptionsPlugin::make(),
+                FilamentDocsPlugin::make(),
+                SpotlightPlugin::make(),
+                EasyFooterPlugin::make(),
+                FilamentTimesheetsPlugin::make(),
+                FilamentSpatieLaravelHealthPlugin::make(),
+                FilamentSpatieLaravelBackupPlugin::make(),
             ]);
     }
 }
