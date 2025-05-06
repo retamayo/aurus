@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Filament\Notifications\Notification;
 
 class GeminiService
 {
@@ -10,17 +11,21 @@ class GeminiService
 
     public function generate(string $prompt, array $context = []): string
     {
-        $response = Http::post($this->endpoint . '?key=' . env('GEMINI_API_KEY'), [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $this->buildContextPrompt($prompt, $context)],
+        try {
+            $response = Http::post($this->endpoint . '?key=' . env('GEMINI_API_KEY'), [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $this->buildContextPrompt($prompt, $context)],
+                        ],
                     ],
                 ],
-            ],
-        ]);
-
-        return $response->json('candidates.0.content.parts.0.text') ?? 'No response';
+            ]);
+    
+            return $response->json('candidates.0.content.parts.0.text') ?? 'No response';
+        } catch (\Throwable $th) {
+            return 'An error occurred while connecting to Gemini.';
+        }
     }
 
     protected function buildContextPrompt(string $prompt, array $context): string

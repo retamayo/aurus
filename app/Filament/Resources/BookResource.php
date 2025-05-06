@@ -85,7 +85,7 @@ class BookResource extends Resource
                                 'French' => 'French',
                                 'German' => 'German',
                             ])
-                            ->default('en')
+                            ->default('English')
                             ->required(),
 
                         Forms\Components\Select::make('book_visibility')
