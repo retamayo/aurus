@@ -62,7 +62,7 @@ class EditBook extends EditRecord
                                                 $tone = $get('tone') ?? 'fantasy';
                                                 $gemini = app(GeminiService::class);
                                                 $response = $gemini->generate(
-                                                    prompt: "Generate a creative story prompt in a '$tone' tone. Don't use the tone in the prompt. Don't add extra words or special chracters, Just the prompt please."
+                                                    prompt: "Generate a creative story prompt in a '$tone' tone. Don't use the tone in the prompt. Don't add extra words or special chracters, Just the prompt please. Be broad and imaginative."
                                                 );
                                                 $set('prompt', trim($response));
                                             })
@@ -122,7 +122,8 @@ class EditBook extends EditRecord
                                     ->default(10)
                                     ->helperText('Set how many chapters the story outline should have'),
                             ]),
-                    ])
+                        ]),
+
                 ])
                 ->action(function (array $data, $livewire) {
                     $gemini = app(GeminiService::class);

@@ -7,11 +7,13 @@ use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TagsInput;
 use App\Services\GeminiService;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\Actions\Action as FormAction;
-use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Wizard;
 
 class CreateBook extends CreateRecord
 {
@@ -25,7 +27,9 @@ class CreateBook extends CreateRecord
                 ->icon('heroicon-m-sparkles')
                 ->form([
                     Wizard::make([
-                        Wizard\Step::make('Step 1: Tone')
+                        Wizard\Step::make('Story Setup')
+                        ->schema([
+                            Card::make()
                             ->schema([
                                 Select::make('tone')
                                     ->label('Tone')
@@ -44,14 +48,53 @@ class CreateBook extends CreateRecord
                                         'Melancholic' => 'Melancholic',
                                     ])
                                     ->required()
-                            ]),
-        
-                        Wizard\Step::make('Step 2: Prompt')
-                            ->schema([
+                                    ->reactive(),
+                    
+                                Select::make('genre')
+                                    ->label('Genre')
+                                    ->options([
+                                        'Fantasy' => 'Fantasy',
+                                        'Sci-Fi' => 'Sci-Fi',
+                                        'Romance' => 'Romance',
+                                        'Thriller' => 'Thriller',
+                                        'Drama' => 'Drama',
+                                        'Adventure' => 'Adventure',
+                                        'Mystery' => 'Mystery',
+                                        'Horror' => 'Horror',
+                                        'Historical' => 'Historical',
+                                    ])
+                                    ->required()
+                                    ->reactive(),
+                                
+                                TextInput::make('chapter_count')
+                                    ->label('Chapter Count')
+                                    ->type('number')
+                                    ->minValue(1)
+                                    ->maxValue(30)
+                                    ->default(10)
+                                    // ->helperText('Set how many chapters the story outline should have')
+                                    ->disabled(fn ($get) => blank($get('setting'))),
+
+                                TextInput::make('theme')
+                                    ->label('Theme')
+                                    ->placeholder('E.g. Redemption, Sacrifice, Coming of Age')
+                                    ->reactive()
+                                    ->disabled(fn ($get) => blank($get('conflict')))
+                                    ->columnSpanFull(),
+
+                                TextInput::make('conflict')
+                                    ->label('Main Conflict')
+                                    ->placeholder('E.g. A forbidden love threatens the balance of realms')
+                                    ->reactive()
+                                    ->disabled(fn ($get) => blank($get('chapter_count')))
+                                    ->columnSpanFull(),
+                                
                                 TextInput::make('prompt')
                                     ->label('Prompt')
                                     ->placeholder('A dark fantasy about a cursed child...')
                                     ->required()
+                                    ->reactive()
+                                    ->disabled(fn ($get) => blank($get('tone')))
                                     ->suffixAction(
                                         FormAction::make('fillPrompt')
                                             ->icon('heroicon-s-light-bulb')
@@ -60,67 +103,110 @@ class CreateBook extends CreateRecord
                                                 $tone = $get('tone') ?? 'fantasy';
                                                 $gemini = app(GeminiService::class);
                                                 $response = $gemini->generate(
-                                                    prompt: "Generate a creative story prompt in a '$tone' tone. Don't use the tone in the prompt. Don't add extra words or special chracters, Just the prompt please."
+                                                    prompt: "Generate a creative story prompt in a '$tone' tone. Don't use the tone in the prompt. Don't add extra words or special characters, just the prompt please."
                                                 );
                                                 $set('prompt', trim($response));
                                             })
-                                    ),
-                            ]),
-        
-                        Wizard\Step::make('Step 3: Main Character')
-                            ->schema([
-                                TextInput::make('main_character')
-                                    ->label('Main Character')
-                                    ->placeholder('E.g. Elira, the cursed princess')
-                                    ->suffixAction(
-                                        FormAction::make('fillMainCharacter')
-                                            ->icon('heroicon-s-user')
-                                            ->tooltip('Suggest main character')
-                                            ->action(function (array $arguments, callable $set, callable $get) {
-                                                $tone = $get('tone') ?? 'fantasy';
-                                                $prompt = $get('prompt') ?? '';
-                                                $gemini = app(GeminiService::class);
-                                                $response = $gemini->generate(
-                                                    prompt: "Generate a unique main character name for a '$tone' story. Prompt: {$prompt} \n Don't add extra words or special characters, just the character name, background and appearance description please."
-                                                );
-                                                $set('main_character', trim($response));
-                                            })
-                                    ),
-                            ]),
-        
-                        Wizard\Step::make('Step 4: Setting')
-                            ->schema([
-                                TextInput::make('setting')
-                                    ->label('Setting')
-                                    ->placeholder('E.g. The fallen city of Nyreth under eternal night')
-                                    ->suffixAction(
-                                        FormAction::make('fillSetting')
-                                            ->icon('heroicon-s-map')
-                                            ->tooltip('Suggest setting')
-                                            ->action(function (array $arguments, callable $set, callable $get) {
-                                                $tone = $get('tone') ?? 'fantasy';
-                                                $prompt = $get('prompt') ?? '';
-                                                $character = $get('main_character') ?? 'the protagonist';
-                                                $gemini = app(GeminiService::class);
-                                                $response = $gemini->generate(
-                                                    prompt: "Suggest a rich setting for a '$tone' story involving $character. Prompt: {$prompt} \n Don't add extra words or special characters, just the setting description please."
-                                                );
-                                                $set('setting', trim($response));
-                                            })
-                                    ),
-                            ]),
-        
-                        Wizard\Step::make('Step 5: Chapter Count')
-                            ->schema([
-                                TextInput::make('chapter_count')
-                                    ->label('Chapter Count')
-                                    ->type('number')
-                                    ->minValue(1)
-                                    ->maxValue(30)
-                                    ->default(10)
-                                    ->helperText('Set how many chapters the story outline should have'),
-                            ]),
-                    ])
+                                    )
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(3),
+                        ]),
+                        Wizard\Step::make('Character & Setting')
+                        ->schema([
+                            Card::make()
+                        ->schema([
+                            TextInput::make('main_character')
+                                ->label('Main Character')
+                                ->placeholder('E.g. Elira, the cursed princess')
+                                ->reactive()
+                                ->disabled(fn ($get) => blank($get('prompt')))
+                                ->suffixAction(
+                                    FormAction::make('fillMainCharacter')
+                                        ->icon('heroicon-s-user')
+                                        ->tooltip('Suggest main character')
+                                        ->action(function (array $arguments, callable $set, callable $get) {
+                                            $tone = $get('tone') ?? 'fantasy';
+                                            $prompt = $get('prompt') ?? '';
+                                            $gemini = app(GeminiService::class);
+                                            $response = $gemini->generate(
+                                                prompt: "Generate a unique main character name for a '$tone' story. Prompt: {$prompt} \n Don't add extra words or special characters, just the character name, background and appearance description please."
+                                            );
+                                            $set('main_character', trim($response));
+                                        })
+                                ),
+                
+                            Select::make('gender')
+                                ->label('Main Character Gender')
+                                ->options([
+                                    'Male' => 'Male',
+                                    'Female' => 'Female',
+                                    'Non-binary' => 'Non-binary',
+                                    'Unknown' => 'Unknown',
+                                ])
+                                ->disabled(fn ($get) => blank($get('main_character'))),
+                
+                            TextInput::make('setting')
+                                ->label('Setting')
+                                ->placeholder('E.g. The fallen city of Nyreth under eternal night')
+                                ->reactive()
+                                ->disabled(fn ($get) => blank($get('main_character')))
+                                ->suffixAction(
+                                    FormAction::make('fillSetting')
+                                        ->icon('heroicon-s-map')
+                                        ->tooltip('Suggest setting')
+                                        ->action(function (array $arguments, callable $set, callable $get) {
+                                            $tone = $get('tone') ?? 'fantasy';
+                                            $prompt = $get('prompt') ?? '';
+                                            $character = $get('main_character') ?? 'the protagonist';
+                                            $gemini = app(GeminiService::class);
+                                            $response = $gemini->generate(
+                                                prompt: "Suggest a rich setting for a '$tone' story involving $character. Prompt: {$prompt} \n Don't add extra words or special characters, just the setting description please."
+                                            );
+                                            $set('setting', trim($response));
+                                        })
+                                )
+                                ->columnSpanFull(),
+                        ])
+                        ->columns(2),
+                    ]),
+                    Wizard\Step::make('Audience')
+                    ->schema([
+                        Card::make()
+                        ->schema([
+                            Select::make('audience_gender')
+                                ->label('Target Audience Gender')
+                                ->options([
+                                    'Male' => 'Male',
+                                    'Female' => 'Female',
+                                    'All' => 'All',
+                                ])
+                                ->required()
+                                ->default('All'),
+                
+                            Select::make('audience_age_group')
+                                ->label('Target Audience Age Group')
+                                ->options([
+                                    'Children' => 'Children',
+                                    'Teens' => 'Teens',
+                                    'Young Adults' => 'Young Adults',
+                                    'Adults' => 'Adults',
+                                ])
+                                ->required()
+                                ->default('Young Adults'),
+                            
+                            TagsInput::make('audience_interests')
+                                ->label('Target Audience Interests')
+                                ->placeholder('E.g. Fantasy, Adventure, Romance')
+                                ->reactive()
+                                ->disabled(fn ($get) => blank($get('audience_age_group')))
+                                ->helperText('Add interests that would appeal to your target audience')
+                                ->columnSpanFull(),
+                        ])
+                        ->columns(2),
+                    ]),
+                
+                ]),
                 ])
                 ->action(function (array $data, $livewire) {
                     $gemini = app(GeminiService::class);
